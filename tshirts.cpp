@@ -15,8 +15,18 @@ char size(int cms) {
 
 void testTshirtSize() {
     std::cout << "\nTshirt size test\n";
+    // Test regular cases
     assert(size(37) == 'S');
     assert(size(40) == 'M');
     assert(size(43) == 'L');
+    
+    // Test boundary cases
+    assert(size(38) == 'M');  // Should be M but returns '\0'
+    assert(size(42) == 'L');  // Should be L but returns '\0'
+    
+    // Test edge cases
+    assert(size(0) == 'S');   // Very small size
+    assert(size(100) == 'L'); // Very large size
+    
     std::cout << "All is well (maybe!)\n";
 }
