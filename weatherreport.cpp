@@ -62,14 +62,38 @@ namespace WeatherSpace
 
     void TestHighPrecipitation()
     {
-        // This instance of stub needs to be different-
-        // to give high precipitation (>60) and low wind-speed (<50)
         SensorStub sensor;
-
-        // strengthen the assert to expose the bug
-        // (function returns Sunny day, it should predict rain)
         string report = Report(sensor);
-        assert(report.length() > 0);
+        // Test for high precipitation (>60) and low wind speed (<50)
+        assert(report.find("rain") != string::npos);
+    }
+
+    void TestSunnyDay()
+    {
+        class SunnySensorStub : public IWeatherSensor {
+            int Humidity() const override { return 30; }
+            int Precipitation() const override { return 10; }
+            double TemperatureInC() const override { return 20; }
+            int WindSpeedKMPH() const override { return 10; }
+        };
+        
+        SunnySensorStub sensor;
+        string report = Report(sensor);
+        assert(report == "Sunny Day");
+    }
+
+    void TestPartlyCloudy()
+    {
+        class PartlyCloudySensorStub : public IWeatherSensor {
+            int Humidity() const override { return 60; }
+            int Precipitation() const override { return 40; }
+            double TemperatureInC() const override { return 26; }
+            int WindSpeedKMPH() const override { return 30; }
+        };
+        
+        PartlyCloudySensorStub sensor;
+        string report = Report(sensor);
+        assert(report == "Partly Cloudy");
     }
 }
 
@@ -77,5 +101,7 @@ void testWeatherReport() {
     cout << "\nWeather report test\n";
     WeatherSpace::TestRainy();
     WeatherSpace::TestHighPrecipitation();
+    WeatherSpace::TestSunnyDay();
+    WeatherSpace::TestPartlyCloudy();
     cout << "All is well (maybe)\n";
 }
