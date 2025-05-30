@@ -46,30 +46,43 @@ namespace WeatherSpace
         {
             if (precipitation >= 20 && precipitation < 60)
                 report = "Partly Cloudy";
+            else if (precipitation >= 60)
+                report = "Alert, Stormy with heavy rain";
             else if (sensor.WindSpeedKMPH() > 50)
                 report = "Alert, Stormy with heavy rain";
         }
         return report;
     }
     
-    void TestRainy()
-    {
-        SensorStub sensor;
+    void TestHighTemperatureAndPrecipitation() {
+        class HighTempHighPrecipSensor : public IWeatherSensor {
+            int Humidity() const override { return 80; }
+            int Precipitation() const override { return 70; }
+            double TemperatureInC() const override { return 30; }
+            int WindSpeedKMPH() const override { return 30; }
+        };
+        
+        HighTempHighPrecipSensor sensor;
         string report = Report(sensor);
-        cout << report << endl;
         assert(report.find("rain") != string::npos);
+        cout << "High temperature and precipitation test passed!\n";
     }
 
-    void TestHighPrecipitation()
-    {
-        SensorStub sensor;
+    void TestHighTemperatureAndWind() {
+        class HighTempHighWindSensor : public IWeatherSensor {
+            int Humidity() const override { return 60; }
+            int Precipitation() const override { return 30; }
+            double TemperatureInC() const override { return 28; }
+            int WindSpeedKMPH() const override { return 55; }
+        };
+        
+        HighTempHighWindSensor sensor;
         string report = Report(sensor);
-        // Test for high precipitation (>60) and low wind speed (<50)
         assert(report.find("rain") != string::npos);
+        cout << "High temperature and wind test passed!\n";
     }
 
-    void TestSunnyDay()
-    {
+    void TestSunnyDay() {
         class SunnySensorStub : public IWeatherSensor {
             int Humidity() const override { return 30; }
             int Precipitation() const override { return 10; }
@@ -80,10 +93,10 @@ namespace WeatherSpace
         SunnySensorStub sensor;
         string report = Report(sensor);
         assert(report == "Sunny Day");
+        cout << "Sunny day test passed!\n";
     }
 
-    void TestPartlyCloudy()
-    {
+    void TestPartlyCloudy() {
         class PartlyCloudySensorStub : public IWeatherSensor {
             int Humidity() const override { return 60; }
             int Precipitation() const override { return 40; }
@@ -94,14 +107,15 @@ namespace WeatherSpace
         PartlyCloudySensorStub sensor;
         string report = Report(sensor);
         assert(report == "Partly Cloudy");
+        cout << "Partly cloudy test passed!\n";
     }
 }
 
 void testWeatherReport() {
-    cout << "\nWeather report test\n";
-    WeatherSpace::TestRainy();
-    WeatherSpace::TestHighPrecipitation();
+    cout << "\nWeather report test suite\n";
+    WeatherSpace::TestHighTemperatureAndPrecipitation();
+    WeatherSpace::TestHighTemperatureAndWind();
     WeatherSpace::TestSunnyDay();
     WeatherSpace::TestPartlyCloudy();
-    cout << "All is well (maybe)\n";
+    cout << "All weather report tests passed!\n";
 }
